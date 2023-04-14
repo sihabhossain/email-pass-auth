@@ -6,6 +6,7 @@ const auth = getAuth(app);
 
 const Register = () => {
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleEmailChange = (event) => {
     console.log(event.target.value);
@@ -17,10 +18,17 @@ const Register = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    setSuccess("");
+    setError("");
 
     const email = event.target.email.value;
     const password = event.target.password.value;
     console.log(email, password);
+    // validate
+    if (!/(?=.*[A-Z])/.test(password)) {
+      setError("please add atleast one uppercase");
+      return;
+    }
     // create user in firebase
 
     createUserWithEmailAndPassword(auth, email, password)
@@ -29,10 +37,12 @@ const Register = () => {
         console.log(loggedUser);
         setError("");
         event.target.reset();
+        setSuccess("User Created Successfully");
       })
       .catch((error) => {
         console.error(error);
         setError(error.message);
+        setSuccess("");
       });
   };
 
@@ -61,9 +71,11 @@ const Register = () => {
           required
         />
         <br />
-        <p className="text-danger">{error}</p>
+
         <input className="btn btn-primary" type="submit" value="Register" />
       </form>
+      <p className="text-danger">{error}</p>
+      <p className="text-success">{success}</p>
     </div>
   );
 };
